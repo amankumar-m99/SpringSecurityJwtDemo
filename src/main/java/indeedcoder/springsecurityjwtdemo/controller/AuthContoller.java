@@ -62,8 +62,8 @@ public class AuthContoller {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             Object principal = authentication.getPrincipal();
-            if (principal instanceof UserDetails) {
-            	AdminResponseDto response = new AdminResponseDto((UserDetails) principal, "SecurityContextHolder");
+            if (principal instanceof UserDetails userdetails) {
+            	AdminResponseDto response = new AdminResponseDto(userdetails, "SecurityContextHolder");
         		return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
             	currentUser = principal.toString();
