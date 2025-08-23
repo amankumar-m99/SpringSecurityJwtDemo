@@ -2,10 +2,12 @@ package indeedcoder.springsecurityjwtdemo.jwt;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,11 @@ public class JwtUtils {
 
 	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
+		List<String> roles = userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+		claims.put("roles", roles);
 		return Jwts.builder().claims(claims).subject(userDetails.getUsername())
 				.header().empty().add("typ", "JWT").and()
 				.issuedAt(new Date(System.currentTimeMillis()))
