@@ -10,37 +10,37 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import indeedcoder.springsecurityjwtdemo.entity.Person;
-import indeedcoder.springsecurityjwtdemo.service.PersonService;
+import indeedcoder.springsecurityjwtdemo.entity.User;
+import indeedcoder.springsecurityjwtdemo.service.UserService;
 
 @RequestMapping("/person")
 @RestController
-public class PersonController {
+public class UserController {
 
-	private PersonService service;
+	private UserService service;
 
 	@Autowired
-	public PersonController(PersonService service) {
+	public UserController(UserService service) {
 		this.service = service;
 	}
 
 	@PostMapping("/person")
-	public Person create(Person person) {
-		return service.create(person);
+	public User create(User user) {
+		return service.create(user);
 	}
 
 	@GetMapping("/person/{id}")
-	public Person findById(@PathVariable Integer id) {
+	public User findById(@PathVariable Integer id) {
 		return service.findById(id);
 	}
 
 	@GetMapping("/persons")
-	public List<Person> findAll() {
+	public List<User> findAll() {
 		return service.findAll();
 	}
 
 	@PutMapping("/person")
-	public Person update(Person person) {
-		return service.update(person);
+	public User update(User user) {
+		return service.update(user);
 	}
 }
