@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import indeedcoder.springsecurityjwtdemo.dto.AdminResponseDto;
 import indeedcoder.springsecurityjwtdemo.dto.LoginRequestDto;
 import indeedcoder.springsecurityjwtdemo.jwt.CustomUserDetailsService;
 import indeedcoder.springsecurityjwtdemo.jwt.JwtUtils;
@@ -50,22 +51,25 @@ public class AuthContoller {
 	}
 	
 	@GetMapping("/admin-annotation")
-	public String adminWithAnnotation(@AuthenticationPrincipal UserDetails userDetails) {
-		return "This is admin endpoint. Current user fetched by @AuthenticationPrincipal is " + userDetails.getUsername();
+	public ResponseEntity<AdminResponseDto> adminWithAnnotation(@AuthenticationPrincipal UserDetails userDetails) {
+		AdminResponseDto dto = new AdminResponseDto(userDetails, "@AuthenticationPrincipal annotation");
+		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 
 	@GetMapping("/admin-context")
-	public String adminWithContext(@AuthenticationPrincipal UserDetails userDetails) {
+	public ResponseEntity<?> adminWithContext() {
 		String currentUser = "";
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof UserDetails) {
-            	currentUser =  userDetails.getUsername();
+            	AdminResponseDto response = new AdminResponseDto((UserDetails) principal, "SecurityContextHolder");
+        		return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
             	currentUser = principal.toString();
             }
         }
-		return "This is admin endpoint. Current user fetched by SecurityContextHolder is " + currentUser;
+        String dto = "This is admin endpoint. Current user fetched by SecurityContextHolder is " + currentUser;
+		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 }
