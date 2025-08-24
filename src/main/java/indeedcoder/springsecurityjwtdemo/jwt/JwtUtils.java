@@ -26,7 +26,17 @@ public class JwtUtils {
 		return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
+	public JwtResponseDto generateJwtResponseDto(UserDetails userDetails) {
+		Date expiryDate = new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000);
+		String token = generateToken(userDetails, expiryDate);
+		return new JwtResponseDto(token, "Bearer", expiryDate.toString());
+	}
+
 	public String generateToken(UserDetails userDetails) {
+		return generateToken(userDetails, new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000));
+	}
+
+	public String generateToken(UserDetails userDetails, Date expiryDate) {
 		Map<String, Object> claims = new HashMap<>();
 		List<String> roles = userDetails.getAuthorities()
                 .stream()
@@ -36,7 +46,7 @@ public class JwtUtils {
 		return Jwts.builder().claims(claims).subject(userDetails.getUsername())
 				.header().empty().add("typ", "JWT").and()
 				.issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
+				.expiration(expiryDate)
 				.signWith(getSigningKey()).compact();
 	}
 

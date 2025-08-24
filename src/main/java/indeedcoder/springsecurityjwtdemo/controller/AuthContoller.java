@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import indeedcoder.springsecurityjwtdemo.dto.AdminResponseDto;
 import indeedcoder.springsecurityjwtdemo.dto.LoginRequestDto;
 import indeedcoder.springsecurityjwtdemo.jwt.CustomUserDetailsService;
+import indeedcoder.springsecurityjwtdemo.jwt.JwtResponseDto;
 import indeedcoder.springsecurityjwtdemo.jwt.JwtUtils;
 
 @RestController
@@ -36,18 +37,16 @@ public class AuthContoller {
 	}
 
 	@GetMapping("/login")
-	public ResponseEntity<String> login(@RequestBody LoginRequestDto request) {
-		String token = null;
+	public ResponseEntity<JwtResponseDto> login(@RequestBody LoginRequestDto request) {
 		try {
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 			UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
-			token = jwtUtils.generateToken(user);
+			return new ResponseEntity<>(jwtUtils.generateJwtResponseDto(user), HttpStatus.OK);
 		} catch (Exception e) {
 			// handles BadCredentialsException as well
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<>(token, HttpStatus.OK);
 	}
 	
 	@GetMapping("/admin-annotation")
